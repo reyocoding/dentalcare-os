@@ -1,0 +1,42 @@
+# Netlify build & deploy configuration.
+# Frontend root is the repo's frontend/ folder; the SPA is served from dist/.
+
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+# SPA fallback: every route serves index.html so React Router owns navigation.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ── Backend proxy (recommended for production) ────────────────────────────
+# Proxy /api requests to your hosted FastAPI backend. The browser only ever
+# talks to the Netlify domain, which keeps the HttpOnly refresh cookie
+# SAME-SITE — the rotating-refresh login flow breaks without this (Lax
+# cookies are not sent on cross-site XHR).
+#
+# 1. Deploy the backend somewhere (Render / Railway / Fly.io / VPS).
+# 2. Set VITE_API_URL=/api as a Netlify environment variable (or in
+#    frontend/.env.production) and uncomment the proxy below with your
+#    real backend URL.
+# 3. On the backend set CORS_ORIGINS to your Netlify domain (e.g.
+#    https://dentalcare-os.netlify.app) and TRUSTED_HOSTS to
+#    api.your-backend-host.com.
+#
+#[[redirects]]
+#  from = "/api/*"
+#  to = "https://your-backend-host.com/:splat"
+#  status = 200
+#  force = true
+
+# ── Security headers for the SPA ──────────────────────────────────────────
+# The backend already sends its own; these complement the Netlify edge.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"

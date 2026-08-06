@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Node
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Secrets / local keys
+backend/.encryption_key
+.env
+*.env
+
+# Stray artifacts
+frontend/src/dental.db
+frontend/src/Untitled-1.txt
+
+# Patient document uploads (encrypted at rest; never commit PHI)
+backend/uploads/
+backend/dental.db
