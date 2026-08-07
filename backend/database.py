@@ -24,9 +24,21 @@ connect_args = {}
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
+# Serverless Postgres hosts (Neon, etc.) administratively close idle
+# connections (Neon: ~5 min idle / maintenance). Without pre-ping, a
+# stale pooled connection is handed to a request -> psycopg AdminShutdown /
+# server closed the connection. pool_pre_ping + pool_recycle keep requests
+# clean; recycle sits under Neon's idle-cutoff so connections are refreshed
+# before the server drops them.
+is_sqlite = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
 engine = create_engine(
     # Set to True to see SQL statements printed in your terminal (great for debugging)
-    SQLALCHEMY_DATABASE_URL, connect_args=connect_args
+    SQLALCHEMY_DATABASE_URL,
+    connect_args=connect_args,
+    pool_pre_ping=not is_sqlite,
+    pool_recycle=240 if not is_sqlite else -1,
+    pool_size=5 if not is_sqlite else 5,
+    max_overflow=10 if not is_sqlite else 10,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
