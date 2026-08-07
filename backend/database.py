@@ -6,8 +6,18 @@ import sqlite3
 import os
 
 # Local SQLite file for development; override with DATABASE_URL (e.g. a
-# PostgreSQL URL) in production. Tests point this at a temp file.
+# PostgreSQL URL from Neon/Render Postgres) in production. Tests point this
+# at a temp file.
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./dental.db")
+
+# We ship the psycopg3 driver (not psycopg2), so a plain "postgresql://"
+# URL cannot be dialed out of the box -- SQLAlchemy's default dialect
+# imports psycopg2. Normalize free-tier URLs (e.g. Neon's connection
+# string) into the explicit "postgresql+psycopg://" form automatically.
+if SQLALCHEMY_DATABASE_URL.startswith("postgresql://") and "+" not in SQLALCHEMY_DATABASE_URL.split("://", 1)[0]:
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace(
+        "postgresql://", "postgresql+psycopg://", 1
+    )
 
 # connect_args={"check_same_thread": False} is required ONLY for SQLite
 connect_args = {}
