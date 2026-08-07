@@ -390,7 +390,9 @@ def main():
 
     Base.metadata.create_all(engine)
     session = SessionLocal()
-    session.execute(__import__("sqlalchemy").text("PRAGMA synchronous=OFF"))
+    # SQLite-only speed hint; Postgres has no synchronous pragma.
+    if engine.dialect.name == "sqlite":
+        session.execute(__import__("sqlalchemy").text("PRAGMA synchronous=OFF"))
 
     clear_tables(session)
     if not args.keep_users:
