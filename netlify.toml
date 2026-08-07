@@ -12,25 +12,19 @@
   to = "/index.html"
   status = 200
 
-# ── Backend proxy (recommended for production) ────────────────────────────
-# Proxy /api requests to your hosted FastAPI backend. The browser only ever
-# talks to the Netlify domain, which keeps the HttpOnly refresh cookie
-# SAME-SITE — the rotating-refresh login flow breaks without this (Lax
-# cookies are not sent on cross-site XHR).
+# ── Backend proxy ──────────────────────────────────────────────────────────
+# Proxies /api requests to the hosted FastAPI backend on Render. The browser
+# only ever talks to the Netlify domain, which keeps the HttpOnly refresh
+# cookie SAME-SITE — the rotating-refresh login flow breaks without this
+# (Lax cookies are not sent on cross-site XHR).
 #
-# 1. Deploy the backend somewhere (Render / Railway / Fly.io / VPS).
-# 2. Set VITE_API_URL=/api as a Netlify environment variable (or in
-#    frontend/.env.production) and uncomment the proxy below with your
-#    real backend URL.
-# 3. On the backend set CORS_ORIGINS to your Netlify domain (e.g.
-#    https://dentalcare-os.netlify.app) and TRUSTED_HOSTS to
-#    api.your-backend-host.com.
-#
-#[[redirects]]
-#  from = "/api/*"
-#  to = "https://your-backend-host.com/:splat"
-#  status = 200
-#  force = true
+# "force = true" + placement BEFORE the SPA fallback is what makes the proxy
+# take precedence over the "/* -> /index.html" rewrite.
+[[redirects]]
+  from = "/api/*"
+  to = "https://dentalcare-backend.onrender.com/:splat"
+  status = 200
+  force = true
 
 # ── Security headers for the SPA ──────────────────────────────────────────
 # The backend already sends its own; these complement the Netlify edge.

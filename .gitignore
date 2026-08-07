@@ -24,3 +24,6 @@ frontend/src/Untitled-1.txt
 # Patient document uploads (encrypted at rest; never commit PHI)
 backend/uploads/
 backend/dental.db
+
+# Local Netlify folder
+.netlify
