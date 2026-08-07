@@ -37,7 +37,8 @@ const cspMeta = (apiUrl: string): Plugin => ({
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const apiUrl =
+    process.env.VITE_API_URL || env.VITE_API_URL || 'http://127.0.0.1:8000';
 
   return {
     plugins: [react(), cspMeta(apiUrl)],
