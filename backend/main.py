@@ -68,11 +68,13 @@ _ensure_columns("treatments", {
 # Pre-existing accounts (created before the approval feature) were implicitly
 # trusted, so backfill them as approved rather than locking everyone out.
 # NULL only: genuinely pending registrations store 0 and must survive restarts.
+# CAST(1 AS BOOLEAN): SQLite stores booleans as integers, Postgres demands
+# a real boolean -- this literal works on both.
 from sqlalchemy import text
 with engine.begin() as conn:
     conn.execute(
         text(
-            "UPDATE users SET is_approved = 1 "
+            "UPDATE users SET is_approved = CAST(1 AS BOOLEAN) "
             "WHERE is_approved IS NULL"
         )
     )
