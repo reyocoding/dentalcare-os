@@ -22,7 +22,7 @@
 # take precedence over the "/* -> /index.html" rewrite.
 [[redirects]]
   from = "/api/*"
-  to = "https://dentalcare-backend.onrender.com/:splat"
+  to = "https://site--dentalcare-backend--f7yrjsdr2ps8.code.run/:splat"
   status = 200
   force = true
 
